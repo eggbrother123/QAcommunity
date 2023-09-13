@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration scan="true" scanPeriod="5 seconds" debug="false">
+
+<!-- 定义变量 -->
+<Properties>
+    <Property name="log.path">/data/logs/QAcommunity</Property>
+    <Property name="log.level">info</Property>
+    <Property name="log.pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%-4relative:%thread] %-5level %logger{56} - %msg%n</Property>
+    <Property name="max.day">10</Property>
+    <Property name="max.size">50mb</Property>
+</Properties>
+
+<!-- 控制台输出 -->
+<Appenders>
+    <Console name="stdout" target="SYSTEM_OUT">
+        <PatternLayout pattern="${log.pattern}"/>
+    </Console>
+</Appenders>
+
+<!-- 业务日志 -->
+<Appenders>
+    <RollingFile name="QAcommunity" fileName="${log.path}/QAcommunity.log"
+                 filePattern="${log.path}/%d{yyyy-MM-dd}/QAcommunity-%d{yyyy-MM-dd}-%i.log.gz">
+        <PatternLayout pattern="${log.pattern}"/>
+        <Policies>
+            <TimeBasedTriggeringPolicy/>
+            <SizeBasedTriggeringPolicy size="${max.size}"/>
+        </Policies>
+        <DefaultRolloverStrategy max="${max.day}"/>
+        <Filters>
+            <ThresholdFilter level="${log.level}" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Filters>
+    </RollingFile>
+</Appenders>
+
+<!-- controller 访问日志 -->
+<Appenders>
+    <RollingFile name="access" fileName="${log.path}/access.log"
+                 filePattern="${log.path}/%d{yyyy-MM-dd}/access-%d{yyyy-MM-dd}-%i.log.gz">
+        <PatternLayout pattern="${log.pattern}"/>
+        <Policies>
+            <TimeBasedTriggeringPolicy/>
+            <SizeBasedTriggeringPolicy size="${max.size}"/>
+        </Policies>
+        <DefaultRolloverStrategy max="${max.day}"/>
+        <Filters>
+            <ThresholdFilter level="${log.level}" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Filters>
+    </RollingFile>
+</Appenders>
+
+<!-- 异常日志 -->
+<Appenders>
+    <RollingFile name="error" fileName="${log.path}/error.log"
+                 filePattern="${log.path}/%d{yyyy-MM-dd}/error-%d{yyyy-MM-dd}-%i.log.gz">
+        <PatternLayout pattern="${log.pattern}"/>
+        <Policies>
+            <TimeBasedTriggeringPolicy/>
+            <SizeBasedTriggeringPolicy size="${max.size}"/>
+        </Policies>
+        <DefaultRolloverStrategy max="${max.day}"/>
+        <Filters>
+            <LevelFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Filters>
+    </RollingFile>
+</Appenders>
+
+<Loggers>
+    <Logger name="access" level="info" additivity="false">
+        <AppenderRef ref="stdout"/>
+        <AppenderRef ref="access"/>
+        <AppenderRef ref="error"/>
+    </Logger>
+    <Root level="info">
+        <AppenderRef ref="error"/>
+        <AppenderRef ref="stdout"/>
+        <AppenderRef ref="forum-java"/>
+    </Root>
+</Loggers>
+
+</Configuration>
